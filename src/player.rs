@@ -38,9 +38,15 @@ fn control_player(
 	mut query: Query<&mut Velocity, With<Player>>,
 	keyboard_input: Res<Input<KeyCode>>,
 ) {
-	if keyboard_input.just_pressed(KeyCode::Space) {
-		let mut velocity = query.single_mut().unwrap();
-		
-		velocity.0 = vec2(0.0, 500.0);
+	let mut velocity = query.single_mut().unwrap();
+
+	if keyboard_input.just_pressed(KeyCode::Space) {	
+		velocity.0.y = 500.0;
+	}
+
+	if keyboard_input.pressed(KeyCode::Right) {
+		velocity.0 += vec2(50.0, 0.0);
+	} else if keyboard_input.pressed(KeyCode::Left) {
+		velocity.0 += vec2(-50.0, 0.0);
 	}
 }
