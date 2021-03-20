@@ -1,12 +1,17 @@
-use bevy::{math::vec2, prelude::*};
+use std::env;
 
-use crate::AssetLoadingState;
+use bevy::{math::vec2, prelude::*};
+use crate::{AssetLoadingState, player::Player, player::PlayerState, utils::compute_overlap};
 
 pub struct PhysicsPlugin;
 
 impl Plugin for PhysicsPlugin {
 	fn build(&self, app: &mut AppBuilder) {
-		app.add_system_set(SystemSet::on_update(AssetLoadingState::Finished).with_system(kinematics.system()));
+		app
+			.add_system_set(SystemSet::on_update(AssetLoadingState::Finished)
+				.with_system(kinematics.system())
+				.with_system(floor_collision.system())
+			);
 	}
 }
 
@@ -57,5 +62,29 @@ fn kinematics(
 	for (acceleration, mut velocity, mut transform) in query.iter_mut() {
 		velocity.0 += acceleration.0 * delta_time;
 		transform.translation += (velocity.0 * delta_time).extend(0.0);
+	}
+}
+
+fn floor_collision(
+	mut player_query: Query<(&mut Transform, &Velocity, &Sprite, &mut PlayerState), With<Player>>,
+	environment_query: Query<(&Transform, &Sprite), (With<Collides>, With<Solid>, Without<Player>)>,
+) {
+	let (player_transform, player_velocity, player_sprite, player_state) = player_query.single_mut().unwrap();
+
+	if *player_state == PlayerState::Airborne {
+		for (platform_transform, platform_sprite) in environment_query.iter() {
+			// println!("Transform: {:?}\nSprite: {:?}", platform_transform, platform_sprite);
+
+			let overlap = compute_overlap(
+				*player_transform,
+				*platform_transform,
+				player_sprite,
+				platform_sprite,
+			);
+
+			if overlap.length_squared() <= 0.0 {
+				
+			}
+		}
 	}
 }

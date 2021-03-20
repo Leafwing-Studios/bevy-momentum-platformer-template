@@ -5,6 +5,7 @@ use bevy::asset::LoadState;
 mod physics;
 mod player;
 mod environment;
+mod utils;
 
 fn main() {
     App::build()

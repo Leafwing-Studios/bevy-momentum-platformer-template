@@ -25,6 +25,5 @@ fn setup_environment(
             sprite: Sprite::new(Vec2::new(900.0, floor_thickness)),
             ..Default::default()
         })
-        .with(Collides)
-        .with(Solid);
+        .with_bundle((Collides, Solid));
 }
